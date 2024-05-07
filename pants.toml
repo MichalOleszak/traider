@@ -41,7 +41,7 @@ default_resolve = "traider"
 
 [python.resolves]
 # ----- module resolves -----
-traider = "traider/traider.lock"
+traider = "src/traider.lock"
 # ----- tool resolves -----
 black = "ci/tool_lockfiles/black.lock"
 mypy = "ci/tool_lockfiles/mypy.lock"
