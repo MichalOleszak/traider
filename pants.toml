@@ -78,8 +78,7 @@ args = [
 # E203: whitespace before ':' (conflicts with Black)
 # E231: bad trailing comma (conflicts with Black)
 # E501: line too long (conflicts with Black)
-# F841: local variable assigned but never used; this is done in Kubeflow pipelines
-args = ["--extend-ignore E203,E231,E501,F841"]
+args = ["--extend-ignore E203,E231,E501"]
 
 [mypy]
 args = [

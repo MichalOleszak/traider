@@ -8,15 +8,14 @@ permissions:
   contents: read
   id-token: write
 jobs:
-  check-BUILD-files:
+  check-build-files:
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Setup Pants
-        run: make setup-pants
-        shell: bash
+      - name: Setup Environment
+        uses: ./.github/actions/setup-env
       - name: Verify BUILD files correctness
         run: |
           pants tailor --check update-build-files --check ::
@@ -27,9 +26,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Setup Pants
-        run: make setup-pants
-        shell: bash
+      - name: Setup Environment
+        uses: ./.github/actions/setup-env
       - name: Run unit tests
         run: |
           pants test ::
@@ -40,9 +38,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Setup Pants
-        run: make setup-pants
-        shell: bash
+      - name: Setup Environment
+        uses: ./.github/actions/setup-env
       - name: Check code format and style
         run: |
           pants lint ::
@@ -53,9 +50,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Setup Pants
-        run: make setup-pants
-        shell: bash
+      - name: Setup Environment
+        uses: ./.github/actions/setup-env
       - name: Check static typing
         run: |
           pants check ::
