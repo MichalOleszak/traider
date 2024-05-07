@@ -1,0 +1,61 @@
+name: Check PR
+on:
+  workflow_dispatch: null
+  pull_request:
+    branches:
+      - main
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  check-BUILD-files:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Pants
+        run: make setup-pants
+        shell: bash
+      - name: Verify BUILD files correctness
+        run: |
+          pants tailor --check update-build-files --check ::
+  run-unit-tests:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    needs: [Check-BUILD-files]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Pants
+        run: make setup-pants
+        shell: bash
+      - name: Run unit tests
+        run: |
+          pants test ::
+  check-code-style:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    needs: [Check-BUILD-files]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Pants
+        run: make setup-pants
+        shell: bash
+      - name: Check code format and style
+        run: |
+          pants lint ::
+  check-typing:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    needs: [Check-BUILD-files]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Pants
+        run: make setup-pants
+        shell: bash
+      - name: Check static typing
+        run: |
+          pants check ::

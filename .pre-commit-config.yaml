@@ -1,0 +1,31 @@
+default_stages: [push]
+default_language_version:
+  python: python3.11
+repos:
+- repo: local
+  hooks:
+    - id: setup-pants
+      name: setup-pants
+      entry: bash -c "make setup-pants"
+      language: system
+      pass_filenames: false
+    - id: check-build-files
+      name: check-build-files
+      entry: bash -c "pants tailor --check update-build-files --check ::"
+      language: system
+      pass_filenames: false
+    - id: check-code-style
+      name: check-code-style
+      entry: sh -c "pants lint ::"
+      language: system
+      pass_filenames: false
+    - id: check-typing
+      name: check-typing
+      entry: sh -c "pants check ::"
+      language: system
+      pass_filenames: false
+    - id: run-unit-tests
+      name: run-unit-tests
+      entry: sh -c "pants test ::"
+      language: system
+      pass_filenames: false

@@ -1,0 +1,101 @@
+[GLOBAL]
+pants_version = "2.20.0"
+unmatched_build_file_globs = "ignore"
+colors = true
+pythonpath = ["%(buildroot)s/pants-plugins"]
+# formatters and linters will run in the order defined below
+backend_packages = [
+    "pants.backend.python",
+    "pants.backend.shell",
+    "pants.backend.docker",
+    "pants.backend.build_files.fmt.black",                 # format BUILD files
+    "pants.backend.python.lint.docformatter",              # format docstrings
+    "pants.backend.python.lint.autoflake",                 # remove unused imports
+    "pants.backend.python.lint.black",                     # format python code
+    "pants.backend.python.lint.flake8",                    # enforce code style
+    "pants.backend.python.lint.isort",                     # sort imports
+    "pants.backend.python.typecheck.mypy",                 # static type check
+]
+
+[source]
+root_patterns = ["/"]
+
+[docker]
+build_args = ["SHORT_SHA"]
+env_vars = ["DOCKER_CONFIG=%(env.HOME)s/.docker", "HOME", "USER", "PATH"]
+tools = [
+  # These are required for GCloud authentication
+  "docker-credential-gcloud",
+  "dirname",
+  "readlink",
+  "python3.11",
+]
+
+[python-infer]
+unowned_dependency_behavior = "ignore"
+
+[python]
+interpreter_constraints = ["==3.11.*"]
+enable_resolves = true
+default_resolve = "traider"
+
+[python.resolves]
+# ----- module resolves -----
+traider = "traider/traider.lock"
+# ----- tool resolves -----
+black = "ci/tool_lockfiles/black.lock"
+mypy = "ci/tool_lockfiles/mypy.lock"
+docformatter = "ci/tool_lockfiles/docformatter.lock"
+flake8 = "ci/tool_lockfiles/flake8.lock"
+autoflake = "ci/tool_lockfiles/autoflake.lock"
+isort = "ci/tool_lockfiles/isort.lock"
+
+[test]
+output = "all"
+report = false
+use_coverage = true
+
+[coverage-py]
+global_report = true
+
+[pytest]
+args = ["-vv", "-s", "-W ignore::DeprecationWarning", "--no-header"]
+
+[docformatter]
+args = ["--wrap-summaries=88", "--wrap-descriptions=88"]
+
+[isort]
+# This is to make isort compatible with Black.
+args = [
+    "-l=88",      # line length
+    "--fgw=0",    # only consider line length to decide whether to grid-wrap imports
+    "--tc",       # include a trailing comma on multi-line imports
+    "-m=3",       # use vertical hanging indent mode for multi-line output
+    "--up",       # use parentheses for line continuation on length limit
+]
+
+[flake8]
+# E203: whitespace before ':' (conflicts with Black)
+# E231: bad trailing comma (conflicts with Black)
+# E501: line too long (conflicts with Black)
+# F841: local variable assigned but never used; this is done in Kubeflow pipelines
+args = ["--extend-ignore E203,E231,E501,F841"]
+
+[mypy]
+args = [
+    "--ignore-missing-imports",
+    "--local-partial-types",
+    "--pretty",
+    "--color-output",
+    "--error-summary",
+    "--show-error-codes",
+    "--show-error-context",
+    "--implicit-optional",
+    "--no-namespace-packages",
+    "--disable-error-code call-overload",
+    "--disable-error-code attr-defined",
+    "--disable-error-code annotation-unchecked",
+]
+
+[anonymous-telemetry]
+enabled = false
