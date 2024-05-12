@@ -3,10 +3,11 @@ from typing import Optional
 
 import numpy as np
 import pandas as pd
+from pandas import DataFrame
 from bs4 import BeautifulSoup
-from src.utils import pandas as pandas_utils
 
 from src.data.scrapers.utils import get_html
+from src.utils import pandas as pandas_utils
 
 BASE_URL = "https://www.biznesradar.pl/"
 
@@ -25,7 +26,7 @@ def clean_pl_string(input_string):
     return input_string.replace(" ", "")
 
 
-def get_profit_and_loss_statement_for_ticker(ticker: str) -> Optional[pd.DataFrame]:
+def get_profit_and_loss_statement_for_ticker(ticker: str) -> Optional[DataFrame]:
     """Get profit and loss statement for a given ticker.
 
     Args:

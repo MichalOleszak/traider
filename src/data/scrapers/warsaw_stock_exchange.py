@@ -1,12 +1,14 @@
-import re
 from io import StringIO
+import re
 from typing import Optional
 
-import pandas as pd
 from bs4 import BeautifulSoup
+import pandas as pd
+from pandas import DataFrame
 from tqdm import tqdm
 
 from src.data.scrapers.utils import get_html
+
 
 BASE_URL = "https://www.gpw.pl/"
 PRICES_ARCHIVE_URL = f"{BASE_URL}/archiwum-notowan-full?type=10&instrument=&"
@@ -25,7 +27,7 @@ COLUMN_NAMES = [
 ]
 
 
-def get_prices_for_date(date: str) -> Optional[pd.DataFrame]:
+def get_prices_for_date(date: str) -> Optional[DataFrame]:
     """Get stock prices for a given date.
 
     Args:
@@ -38,9 +40,7 @@ def get_prices_for_date(date: str) -> Optional[pd.DataFrame]:
     table = soup.find("table", class_="table footable", attrs={"data-sorting": "true"})
     if table:
         # Remove spaces between digits and convert commas to dots
-        table_html = StringIO(
-            re.sub(r"(\d)\s+(\d)", r"\1\2", str(table).replace(",", "."))
-        )
+        table_html = StringIO(re.sub(r'(\d)\s+(\d)', r'\1\2', str(table).replace(",", ".")))
         df = pd.read_html(table_html)[0]
         df.columns = COLUMN_NAMES
         df["date"] = pd.to_datetime(date, format="%d-%m-%Y")
@@ -50,7 +50,7 @@ def get_prices_for_date(date: str) -> Optional[pd.DataFrame]:
         return None
 
 
-def get_prices_for_date_range(date_start: str, date_end: str) -> pd.DataFrame:
+def get_prices_for_date_range(date_start: str, date_end: str) -> DataFrame:
     """Get stock prices for a given date range.
 
     Args:
@@ -58,15 +58,14 @@ def get_prices_for_date_range(date_start: str, date_end: str) -> pd.DataFrame:
         date_end (str): End date in format YYYY-MM-DD.
     """
     dates = [
-        date
-        for date in pd.date_range(start=date_start, end=date_end, freq="D")
+        date for date in pd.date_range(start=date_start, end=date_end, freq="D")
         if date.day_name() not in ["Saturday", "Sunday"]
     ]
     df_list = [get_prices_for_date(date) for date in tqdm(dates)]
     return pd.concat(df_list, ignore_index=True)
 
 
-def get_prices_for_month(year: int, month: int) -> pd.DataFrame:
+def get_prices_for_month(year: int, month: int) -> DataFrame:
     """Get stock prices for a given month.
 
     Args:
@@ -79,14 +78,12 @@ def get_prices_for_month(year: int, month: int) -> pd.DataFrame:
 
 
 def get_info_for_isin(isin: str) -> dict:
+    """Get company name and ticker for a given ISIN."""
     target_url = f"{BASE_URL}/spolka?isin={isin}#infoTab"
     html_content = get_html(target_url)
     soup = BeautifulSoup(html_content, "html.parser")
     return {
         "isin": isin,
-        "name": soup.find("small", {"id": "getH1"})
-        .get_text(strip=True)
-        .split("(")[0]
-        .strip(),
-        "ticker": soup.find_all("input", {"id": "glsSkrot"})[0].get("value"),
+        "name": soup.find("small", {"id": "getH1"}).get_text(strip=True).split("(")[0].strip(),
+        "ticker": soup.find_all('input', {'id': 'glsSkrot'})[0].get('value'),
     }
