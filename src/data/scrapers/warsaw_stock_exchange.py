@@ -1,14 +1,13 @@
-from io import StringIO
 import re
+from io import StringIO
 from typing import Optional
 
-from bs4 import BeautifulSoup
 import pandas as pd
+from bs4 import BeautifulSoup
 from pandas import DataFrame
 from tqdm import tqdm
 
 from src.data.scrapers.utils import get_html
-
 
 BASE_URL = "https://www.gpw.pl/"
 PRICES_ARCHIVE_URL = f"{BASE_URL}/archiwum-notowan-full?type=10&instrument=&"
@@ -40,7 +39,9 @@ def get_prices_for_date(date: str) -> Optional[DataFrame]:
     table = soup.find("table", class_="table footable", attrs={"data-sorting": "true"})
     if table:
         # Remove spaces between digits and convert commas to dots
-        table_html = StringIO(re.sub(r'(\d)\s+(\d)', r'\1\2', str(table).replace(",", ".")))
+        table_html = StringIO(
+            re.sub(r"(\d)\s+(\d)", r"\1\2", str(table).replace(",", "."))
+        )
         df = pd.read_html(table_html)[0]
         df.columns = COLUMN_NAMES
         df["date"] = pd.to_datetime(date, format="%d-%m-%Y")
@@ -58,7 +59,8 @@ def get_prices_for_date_range(date_start: str, date_end: str) -> DataFrame:
         date_end (str): End date in format YYYY-MM-DD.
     """
     dates = [
-        date for date in pd.date_range(start=date_start, end=date_end, freq="D")
+        date
+        for date in pd.date_range(start=date_start, end=date_end, freq="D")
         if date.day_name() not in ["Saturday", "Sunday"]
     ]
     df_list = [get_prices_for_date(date) for date in tqdm(dates)]
@@ -84,6 +86,9 @@ def get_info_for_isin(isin: str) -> dict:
     soup = BeautifulSoup(html_content, "html.parser")
     return {
         "isin": isin,
-        "name": soup.find("small", {"id": "getH1"}).get_text(strip=True).split("(")[0].strip(),
-        "ticker": soup.find_all('input', {'id': 'glsSkrot'})[0].get('value'),
+        "name": soup.find("small", {"id": "getH1"})
+        .get_text(strip=True)
+        .split("(")[0]
+        .strip(),
+        "ticker": soup.find_all("input", {"id": "glsSkrot"})[0].get("value"),
     }

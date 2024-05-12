@@ -3,8 +3,8 @@ from typing import Optional
 
 import numpy as np
 import pandas as pd
-from pandas import DataFrame
 from bs4 import BeautifulSoup
+from pandas import DataFrame
 
 from src.data.scrapers.utils import get_html
 from src.utils import pandas as pandas_utils
