@@ -37,11 +37,11 @@ unowned_dependency_behavior = "ignore"
 [python]
 interpreter_constraints = ["==3.11.*"]
 enable_resolves = true
-default_resolve = "traider"
+default_resolve = "scrapers"
 
 [python.resolves]
 # ----- module resolves -----
-traider = "src/traider.lock"
+scrapers = "src/data/scrapers/scrapers.lock"
 # ----- tool resolves -----
 black = "ci/tool_lockfiles/black.lock"
 mypy = "ci/tool_lockfiles/mypy.lock"
