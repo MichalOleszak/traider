@@ -111,7 +111,7 @@ class WSEPriceScraper(BaseTableScraper):
         data_href = a_tag["data-href"]
         parsed_url = urlparse.urlparse(data_href)
         query_params = parse_qs(parsed_url.query)
-        sector = query_params.get("sektor", [None])[0]
+        sector = query_params.get("sektor", [""])[0]
 
         return {
             "isin": isin_number,
