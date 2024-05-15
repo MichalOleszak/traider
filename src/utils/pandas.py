@@ -20,6 +20,9 @@ def rename_duplicate_columns(df: DataFrame) -> DataFrame:
     """Rename duplicate columns in a DataFrame."""
     cols = pd.Series(df.columns)
     for dup in df.columns[df.columns.duplicated(keep=False)]:
-        cols[df.columns.get_loc(dup)] = [f"{dup}_{i}" if i != 0 else dup for i in range(df.columns.get_loc(dup).sum())]
+        cols[df.columns.get_loc(dup)] = [
+            f"{dup}_{i}" if i != 0 else dup
+            for i in range(df.columns.get_loc(dup).sum())
+        ]
     df.columns = cols
     return df

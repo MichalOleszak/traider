@@ -14,7 +14,9 @@ class BiznesradarScraper(BaseTableScraper):
         self.BASE_URL = "https://www.biznesradar.pl/"
 
     def _preprocess_url(self, **kwargs) -> str:
-        return f"{self.BASE_URL}raporty-finansowe-{kwargs['resource']}/{kwargs['ticker']}"
+        return (
+            f"{self.BASE_URL}raporty-finansowe-{kwargs['resource']}/{kwargs['ticker']}"
+        )
 
     @staticmethod
     def _find_table(soup):
@@ -66,9 +68,7 @@ class BiznesradarScraper(BaseTableScraper):
         """
         return self._scrape(ticker=ticker, resource="rachunek-zyskow-i-strat")
 
-    def get_balance_sheet_for_ticker(
-        self, ticker: str
-    ) -> Optional[DataFrame]:
+    def get_balance_sheet_for_ticker(self, ticker: str) -> Optional[DataFrame]:
         """Get balance sheeet for a given ticker.
 
         Args:
@@ -76,13 +76,10 @@ class BiznesradarScraper(BaseTableScraper):
         """
         return self._scrape(ticker=ticker, resource="bilans")
 
-    def get_cash_flow_for_ticker(
-        self, ticker: str
-    ) -> Optional[DataFrame]:
+    def get_cash_flow_for_ticker(self, ticker: str) -> Optional[DataFrame]:
         """Get cash flow for a given ticker.
 
         Args:
             ticker (str): Stock ticker.
         """
         return self._scrape(ticker=ticker, resource="przeplywy-pieniezne")
-    
