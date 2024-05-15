@@ -6,6 +6,8 @@ import pandas as pd
 from bs4 import BeautifulSoup
 from pandas import DataFrame
 from tqdm import tqdm
+import urllib.parse as urlparse
+from urllib.parse import parse_qs
 
 from src.data.scrapers.base_table_scraper import BaseTableScraper
 
@@ -85,14 +87,26 @@ class WSEPriceScraper(BaseTableScraper):
 
     def get_info_for_isin(self, isin_number: str) -> dict:
         """Get company name and ticker for a given ISIN."""
-        target_url = f"{self.BASE_URL}/spolka?isin={isin_number}#infoTab"
-        html_content = self._get_html(target_url)
-        soup = BeautifulSoup(html_content, "html.parser")
+        # Get name and ticker
+        target_url_info = f"{self.BASE_URL}/spolka?isin={isin_number}#infoTab"
+        html_content_info = self._get_html(target_url_info)
+        soup_info = BeautifulSoup(html_content_info, "html.parser")
+        name = soup_info.find("small", {"id": "getH1"}).get_text(strip=True).split("(")[0].strip()
+        ticker = soup_info.find_all("input", {"id": "glsSkrot"})[0].get("value")
+
+        # Get sector
+        target_url_indicators = f"{self.BASE_URL}/spolka?isin={isin_number}#indicatorsTab"
+        html_content_indicators = self._get_html(target_url_indicators)
+        soup_indicators = BeautifulSoup(html_content_indicators, "html.parser")
+        a_tag = soup_indicators.find("a", class_="nav-link", href="#showNotoria", title="Dane finansowe")
+        data_href = a_tag["data-href"]
+        parsed_url = urlparse.urlparse(data_href)
+        query_params = parse_qs(parsed_url.query)
+        sector = query_params.get("sektor", [None])[0]
+
         return {
             "isin": isin_number,
-            "name": soup.find("small", {"id": "getH1"})
-            .get_text(strip=True)
-            .split("(")[0]
-            .strip(),
-            "ticker": soup.find_all("input", {"id": "glsSkrot"})[0].get("value"),
+            "name": name,
+            "ticker": ticker,
+            "sector": sector.lower()
         }
