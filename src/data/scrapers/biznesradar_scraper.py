@@ -36,20 +36,23 @@ class BiznesradarScraper(BaseTableScraper):
                 data.append(row_data)
         df = pd.DataFrame(data, columns=headers)
         for col in range(1, len(df.columns)):  # skip first column with row names
-            df.iloc[:, col] = df.iloc[:, col].apply(self._clean_pl_string)
+            df.iloc[:, col] = df.iloc[:, col].apply(self._clean_string)
         df = df.transpose().reset_index(drop=True)
         df = pandas_utils.replace_header_with_top_row(df)
         df = df.replace("", np.nan)
-        df = df.dropna()
+        df = df.dropna(how="all")
         df["ticker"] = kwargs["ticker"]
         return df
 
     @staticmethod
-    def _clean_pl_string(input_string) -> str:
+    def _clean_string(input_string) -> str:
         """Clean a string from the profit and loss statement data."""
         # Do not change date pattern YYYY-MM-DD
         if re.match(r"^\d{4}-\d{2}-\d{2}$", input_string):
             return input_string
+        # Missing values get filled-in with strings like "r/r-100.00%~sektor-1.14%"
+        if input_string.startswith("r/r"):
+            return np.nan
         # Apply only to strings starting with a digit or a hyphen (negative numbers)
         if input_string and (input_string[0].isdigit() or input_string[0] == "-"):
             # Find all characters that are digits, spaces or a starting hyphen until the first alphabetic character
