@@ -52,7 +52,7 @@ class BiznesradarScraper(BaseTableScraper):
             return input_string
         # Missing values get filled-in with strings like "r/r-100.00%~sektor-1.14%"
         if input_string.startswith("r/r"):
-            return np.nan
+            return ""
         # Apply only to strings starting with a digit or a hyphen (negative numbers)
         if input_string and (input_string[0].isdigit() or input_string[0] == "-"):
             # Find all characters that are digits, spaces or a starting hyphen until the first alphabetic character
