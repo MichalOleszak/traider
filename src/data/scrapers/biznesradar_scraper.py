@@ -5,9 +5,9 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 from pandas import DataFrame
+from src.utils import pandas as pandas_utils
 
 from src.data.scrapers.base_table_scraper import BaseTableScraper
-from src.utils import pandas as pandas_utils
 
 
 class BiznesradarScraper(BaseTableScraper):
