@@ -62,7 +62,7 @@ def get_lagged_market_ops_data(df: pd.DataFrame) -> pd.DataFrame:
 
 def get_next_day_return(df: pd.DataFrame, outlier_cutoff: float = 0.01) -> pd.DataFrame:
     """Get next-day returns, winsorized at 1% and 99% levels."""
-    df[f"target_next_day_return"] = (
+    df["target_next_day_return"] = (
         df.groupby("ticker")
         .close.pct_change(1)
         .pipe(
@@ -86,7 +86,7 @@ def get_momentum_factors(
     """
     for lag in periods:
         df[f"momentum_{lag}d"] = df[f"return_{lag}d"].sub(df.return_1d)
-    df["momentum_2_10d"] = df[f"return_10d"].sub(df.return_2d)
+    df["momentum_2_10d"] = df["return_10d"].sub(df.return_2d)
     return df
 
 
