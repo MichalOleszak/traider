@@ -10,5 +10,6 @@ DATA_PATHS = {
     "DEBT_IND_FP": "data/wse_info/debt_ind.csv",
     "LIQUIDITY_IND_FP": "data/wse_info/liquidity_ind.csv",
     "ACTIVITY_IND_FP": "data/wse_info/activity_ind.csv",
-    "JOINED_DATA_FP": "data/preprocessed.csv",
+    "CLEANED_DATA_FP": "data/preprocessed.csv",
+    "FEATURIZED_DATA_FP": "data/featurized.csv",
 }
