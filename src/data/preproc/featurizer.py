@@ -109,7 +109,11 @@ def remove_rows_with_nans(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def get_relative_strength_index(df: pd.DataFrame) -> pd.DataFrame:
-    df["alpha_rsi"] = df.groupby("ticker").close.apply(talib.RSI, timeperiod=14).reset_index(drop=True)
+    df["alpha_rsi"] = (
+        df.groupby("ticker")
+        .close.apply(talib.RSI, timeperiod=14)
+        .reset_index(drop=True)
+    )
     return df
 
 
